@@ -9,20 +9,36 @@ Formatiert alle angeschlossenen Bootsticks (optional als vollständige Formatier
 
 Sichert, formatiert und initialisiert alle angeschlossenen Bootsticks.
 
-(TODO: Einschränkung mit Parametern)
+Das Skript akzeptiert die folgenden Parameter:
+
+* `NoBackup` es werden keine Sicherungen erstellt
+* `BackupOrdner` der Ordner in dem die Sicherungen abgelegt werden sollen (dort im Unterordner `\Datum\StickNummer`)
+
+* `NoFormat` wenn die Sticks nicht formatiert werden sollen
+* `FormatOnly` wenn die Sticks nur formatiert (aber weder gesichert noch initialisiert) werden sollen
+* `FullFormat` wenn eine volle Formatierung (statt einer schnellen Formatierung) durchgeführt werden soll
+
+* `NoInit` wenn keine Dateien auf die Sticks kopiert werden sollen
+* `MakeISO` um die Erstellung von ISO Dateien zu erzwingen
+* `AngabenOrdner` der Ordner in dem die zu kopierenden Dateien liegen, dort in den Verzeichnissen `Angabe`, `Hilfe`, `toISO` und `isofiles`. Default-Wert: `Angaben`
 
 ### Sicherung
 
-Die angeschlossenen Sticks werden im Verzeichnis `Abgaben\_Datum_\_StickNummer` gesichert.
+Die angeschlossenen Sticks werden (sofern nicht über den Parameter `BackupOrdner` anders angegeben) im Verzeichnis `Abgaben\_Datum_\_StickNummer` gesichert.
 
 ### Initialisierung
 
 Das Verzeichnis `Abgabe` wird auf jedem Stick angelegt.
 
-Datein aus dem Verzeichnis `Angaben\Angabe` werden auf jedem Stick ins Verzeichnis `Angabe` kopiert.
+Im Verzeichnis `Angaben` (kann durch den Parameter `AngabenOrdner` überschrieben werden) wird folgende Dateistruktur erwartet:
 
-Dateien aus dem Verzeichnis `Angaben\Hilfe` werden auf jedem Stick ins Verzeichnis `Hilfe` kopiert.
+```
+|- Angabe
+|- Hilfe
+|- isofiles
+|- toISO
+```
 
-Für alle Verzeichnisse im Ordner `Angaben\toISO` werden entsprechende `iso` Dateien im Verzeichnis `Angaben\isofiles` erstellt (sofern nicht bereits existent).
+Dateien aus den Unterverzeichnissen `Angabe`, `Hilfe` und `isofiles` (sofern vorhanden) werden in die gleichnamigen Verzeichnisse auf allen Sticks kopiert (nur Dateien mit der Endung `.iso` im Unterverzeichnis `isofiles`). Falls Dateien aus dem Verzeichnis `isofiles` kopiert wurden, so wird auch das Skript `mount_isos.sh`auf jeden Stick kopiert (mit dem die entsprechenden Dateien gemountet werden können).
 
-Dateien aus dem Verzeichnis `Angaben\isofiles` werden auf jedem Stick ins Verzeichnis `isofiles` kopiert. Zusätzlich wird die Datei `mount_isos.sh` auf jeden Stick kopiert, die sämtliche `iso` Dateien mountet.
+Für alle Verzeichnisse im Unterordner `toISO` werden entsprechende `iso` Dateien im Unterverzeichnis `isofiles` erstellt (sofern nicht bereits existent).
