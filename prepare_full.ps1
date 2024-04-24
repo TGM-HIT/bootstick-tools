@@ -66,10 +66,10 @@ Foreach ($dev in $devices){
 }
 
 
-## Überprüfen, ob ein ISO angelegt werden soll und ggf. im Angabe-Ordner erstellen
-$toISOPath = "$PSScriptRoot\Angabe\toISO"
+## Überprüfen, ob ein ISO angelegt werden soll und ggf. im Angaben-Ordner erstellen
+$toISOPath = "$PSScriptRoot\Angaben\toISO"
 if (Test-Path -Path toISOPath) {
-    $isoTargetFolder = "$PSScriptRoot\Angabe\isofiles"
+    $isoTargetFolder = "$PSScriptRoot\Angaben\isofiles"
     if ( !(Test-Path -Path $isoTargetFolder) ) {
         mkdir $isoTargetFolder
     }
@@ -92,7 +92,7 @@ Foreach ($dev in $devices) {
     mkdir "$($dev.DriveLetter)\Abgabe"
 
     ### Kopieren der Angabe
-    $src_path = "$PSScriptRoot\Angabe\Angabe\*"
+    $src_path = "$PSScriptRoot\Angaben\Angabe\*"
     $dst_path = "$($dev.DriveLetter)\Angabe"
 
     # Überprüfen ob überhaupt etwas kopiert werden soll ...
@@ -105,7 +105,7 @@ Foreach ($dev in $devices) {
     }
 
     ### Kopieren der Hilfe
-    $src_path = "$PSScriptRoot\Angabe\Hilfe\*"
+    $src_path = "$PSScriptRoot\Angaben\Hilfe\*"
     $dst_path = "$($dev.DriveLetter)\Hilfe"
 
     # Überprüfen ob überhaupt etwas kopiert werden soll ...
@@ -118,7 +118,7 @@ Foreach ($dev in $devices) {
     }
 
     ### Kopieren der ISO Files
-    $src_path =  "$PSScriptRoot\Angabe\isofiles\*.iso"
+    $src_path =  "$PSScriptRoot\Angaben\isofiles\*.iso"
     $dst_path = "$($dev.DriveLetter)\isofiles"
 
     # Überprüfen ob überhaupt etwas kopiert werden soll ...
