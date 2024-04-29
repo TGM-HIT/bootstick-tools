@@ -13,12 +13,14 @@ Das Skript akzeptiert die folgenden Parameter:
 
 * `NoBackup` es werden keine Sicherungen erstellt
 * `BackupOrdner` der Ordner in dem die Sicherungen abgelegt werden sollen (dort im Unterordner `\Datum\StickNummer`)
+* `BackupOnly` um nur ein Backup zu erstellen
 
 * `NoFormat` wenn die Sticks nicht formatiert werden sollen
 * `FormatOnly` wenn die Sticks nur formatiert (aber weder gesichert noch initialisiert) werden sollen
 * `FullFormat` wenn eine volle Formatierung (statt einer schnellen Formatierung) durchgeführt werden soll
 
 * `NoInit` wenn keine Dateien auf die Sticks kopiert werden sollen
+* `SkipISO` um die Erstellung von ISO Dateien zu unterbinden
 * `MakeISO` um die Erstellung von ISO Dateien zu erzwingen
 * `AngabenOrdner` der Ordner in dem die zu kopierenden Dateien liegen, dort in den Verzeichnissen `Angabe`, `Hilfe`, `toISO` und `isofiles`. Default-Wert: `Angaben`
 

@@ -18,6 +18,29 @@
 #
 #**************************************
 
+param (
+    [switch]$NoBackup=$false,
+    [string]$BackupOrdner="$PSScriptRoot\Abgaben",
+    [switch]$BackupOnly=$false,
+
+    [switch]$NoFormat=$false,
+    [switch]$FormatOnly=$false,
+    [switch]$FullFormat=$false,
+
+    [switch]$NoInit=$false,
+    [switch]$SkipISO=$false,
+    [switch]$MakeISO=$false,
+    [string]$AngabenOrdner="$PSScriptRoot\Angaben",
+
+    [switch]$NoEject=$false
+)
+
+$doBackup = !$NoBackup
+$doFormat = !$NoFormat -and !$BackupOnly
+$doMkIso = $MakeISO -or !$SkipISO
+$doInit = !$NoInit -and !$FormatOnly -and !$BackupOnly
+$doEject = !$NoEject
+
 Import-Module ./HitStick
 
 $date = Get-Date -Format "yyyyMMdd"
@@ -27,7 +50,7 @@ $devices = Get-BootstickList
 Write-Host "Folgende Laufwerke werden formatiert:"
 
 # Alle gefundenen Laufwerke werden aufgelistet
-Foreach ($dev in $devices) {
+foreach ($dev in $devices) {
     Write-Host "Laufwerk" $dev.DriveLetter "mit der Benennung" $dev.Label
 }
 
@@ -37,105 +60,120 @@ Confirm-Execution
 
 
 # Alle Bootsticks werden gesichert
-Foreach ($dev in $devices) {
-    # Zielpfad in den gesichert werden soll
-    $dst_path = "$PSScriptRoot\Abgaben\$date\$($dev.Label)\"
+if ($doBackup) {
+    foreach ($dev in $devices) {
+        # Zielpfad in den gesichert werden soll
+        $dst_path = "$BackupOrdner\$date\$($dev.Label)\"
 
-    $src_path = $dev.DriveLetter + "\Abgabe"
+        $src_path = $dev.DriveLetter + "\Abgabe"
 
-    # Überprüfen, ob das Zielverzeichnis bereits existiert ...
-    while (Test-Path -Path $dst_path) {
-        Write-Host "ACHTUNG!!!: Das Verzeichnis $dst_path existiert bereits. Der USB-Stick $($dev.Label) kann nicht gesichert werden." 
-        Write-Host "Entfernen Sie den betreffenden Ordner$($dev.Label) aus dem Zielverzeichnis oder brechen Sie den Vorgang hier ab."
-        Confirm-Execution
+        # Überprüfen, ob das Zielverzeichnis bereits existiert ...
+        while (Test-Path -Path $dst_path) {
+            Write-Host "ACHTUNG!!!: Das Verzeichnis $dst_path existiert bereits. Der USB-Stick $($dev.Label) kann nicht gesichert werden." 
+            Write-Host "Entfernen Sie den betreffenden Ordner$($dev.Label) aus dem Zielverzeichnis oder brechen Sie den Vorgang hier ab."
+            Confirm-Execution
+        }
+
+        # Zielverzeichnis anlegen
+        mkdir $dst_path
+
+        Copy-Data -SrcPath $src_path -DstPath $dst_path
+
+        ## TODO File Check
     }
-
-    # Zielverzeichnis anlegen
-    mkdir $dst_path
-
-    Copy-Data -SrcPath $src_path -DstPath $dst_path
-
-    ## TODO File Check
 }
 
 
 # Pro gefundenem Laufwerk wird fogende Schleife einmal ausgeführt
-Foreach ($dev in $devices){
-    Write-Host "USB-Stick $($dev.Label) wird formatiert"
-    Format-Bootstick $dev #-Full
+if ($doFormat) {
+    foreach ($dev in $devices){
+        Write-Host "USB-Stick $($dev.Label) wird formatiert"
+        
+        if ($FullFormat) {
+            Format-Bootstick $dev -Full
+        } else {
+            Format-Bootstick $dev
+        }
+    }
 }
 
 
 ## Überprüfen, ob ein ISO angelegt werden soll und ggf. im Angaben-Ordner erstellen
-$toISOPath = "$PSScriptRoot\Angaben\toISO"
-if (Test-Path -Path toISOPath) {
-    $isoTargetFolder = "$PSScriptRoot\Angaben\isofiles"
-    if ( !(Test-Path -Path $isoTargetFolder) ) {
-        mkdir $isoTargetFolder
-    }
+if ($doMkIso) {
+    $toISOPath = "$AngabenOrdner\toISO"
+    if (Test-Path -Path toISOPath) {
+        $isoTargetFolder = "$AngabenOrdner\isofiles"
+        if ( !(Test-Path -Path $isoTargetFolder) ) {
+            mkdir $isoTargetFolder
+        }
 
-    $isoFolders = Get-ChildItem $toISOPath -Directory
-    
-    foreach ($isoFolder in $isoFolders) {
-        $isoTargetFile = "$isoTargetFolder\$($isoFolder.Name).iso"
+        $isoFolders = Get-ChildItem $toISOPath -Directory
+        
+        foreach ($isoFolder in $isoFolders) {
+            $isoTargetFile = "$isoTargetFolder\$($isoFolder.Name).iso"
 
-        # TODO Nicht auf Existenz prüfen, sondern auf Aktualität
-        if ( !(Test-Path -Path $isoTargetFile) ) {
-            New-IsoFile $isoFolder.FullName -Path "$isoTargetFile" -Title $isoFolder.Name
+            # TODO Nicht auf Existenz prüfen, sondern auf Aktualität
+            if ( !(Test-Path -Path $isoTargetFile) ) {
+                New-IsoFile $isoFolder.FullName -Path "$isoTargetFile" -Title $isoFolder.Name
+            }
         }
     }
 }
 
 
 # Alle Bootsticks werden initialisiert
-Foreach ($dev in $devices) {
-    mkdir "$($dev.DriveLetter)\Abgabe"
+if ($doInit) {
+    foreach ($dev in $devices) {
+        mkdir "$($dev.DriveLetter)\Abgabe"
 
-    ### Kopieren der Angabe
-    $src_path = "$PSScriptRoot\Angaben\Angabe\*"
-    $dst_path = "$($dev.DriveLetter)\Angabe"
+        ### Kopieren der Angabe
+        $src_path = "$AngabenOrdner\Angabe\*"
+        $dst_path = "$($dev.DriveLetter)\Angabe"
 
-    # Überprüfen ob überhaupt etwas kopiert werden soll ...
-    if (Test-Path -Path $src_path) {
-        mkdir $dst_path
+        # Überprüfen ob überhaupt etwas kopiert werden soll ...
+        if (Test-Path -Path $src_path) {
+            mkdir $dst_path
 
-        Copy-Data -SrcPath $src_path -DstPath $dst_path
+            Copy-Data -SrcPath $src_path -DstPath $dst_path
 
-        ## TODO File Check    
-    }
+            ## TODO File Check    
+        }
 
-    ### Kopieren der Hilfe
-    $src_path = "$PSScriptRoot\Angaben\Hilfe\*"
-    $dst_path = "$($dev.DriveLetter)\Hilfe"
+        ### Kopieren der Hilfe
+        $src_path = "$AngabenOrdner\Hilfe\*"
+        $dst_path = "$($dev.DriveLetter)\Hilfe"
 
-    # Überprüfen ob überhaupt etwas kopiert werden soll ...
-    if (Test-Path -Path $src_path) {
-        mkdir $dst_path
-    
-        Copy-Data -SrcPath $src_path -DstPath $dst_path
-    
-        ## TODO File Check    
-    }
-
-    ### Kopieren der ISO Files
-    $src_path =  "$PSScriptRoot\Angaben\isofiles\*.iso"
-    $dst_path = "$($dev.DriveLetter)\isofiles"
-
-    # Überprüfen ob überhaupt etwas kopiert werden soll ...
-    if ( (Get-ChildItem $srcPath).Count -gt 0 ) {
-        mkdir $dst_path
+        # Überprüfen ob überhaupt etwas kopiert werden soll ...
+        if (Test-Path -Path $src_path) {
+            mkdir $dst_path
         
-        Copy-Data -SrcPath $src_path -DstPath $dst_path
+            Copy-Data -SrcPath $src_path -DstPath $dst_path
+        
+            ## TODO File Check    
+        }
 
-        ## TODO File Check
+        ### Kopieren der ISO Files
+        $src_path =  "$AngabenOrdner\isofiles\*.iso"
+        $dst_path = "$($dev.DriveLetter)\isofiles"
 
-        Copy-Data -SrcPath "$PSScriptRoot\mount_isos.sh" -DstPath "$($dev.DriveLetter)\mount_isos.sh"
+        # Überprüfen ob überhaupt etwas kopiert werden soll ...
+        if ( (Get-ChildItem $srcPath).Count -gt 0 ) {
+            mkdir $dst_path
+            
+            Copy-Data -SrcPath $src_path -DstPath $dst_path
+
+            ## TODO File Check
+
+            Copy-Item -Path "$PSScriptRoot\mount_isos.sh" -Destination "$($dev.DriveLetter)"
+        }
     }
 }
 
 
-Foreach ($dev in $devices){
-    Dismount-Bootstick $dev
+if ($doEject) {
+    foreach ($dev in $devices){
+        Dismount-Bootstick $dev
+    }
 }
 
 

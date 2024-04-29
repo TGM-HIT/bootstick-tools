@@ -1,0 +1,7 @@
+# Always check in and check out the following files with LFs.
+*.sh text eol=lf
+
+# Always check in and check out the following files with CRLFs.
+*.ps1 text eol=crlf
+*.psd1 text eol=crlf
+*.psm1 text eol=crlf
