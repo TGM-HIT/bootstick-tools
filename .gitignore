@@ -1,0 +1,4 @@
+# Ignore all content in 'Abgaben', 'Angaben' and 'NoBackup'
+/Abgaben/
+/Angaben/
+/NoBackup/
