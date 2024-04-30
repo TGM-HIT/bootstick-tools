@@ -16,6 +16,7 @@
 # V1.1 Kontrolle der Dateigröße hinzugefügt
 # V2.0 Refactoring mit PS-Modul, ISO Files, ...
 # V2.1 Datenstick-Erklärung wird noch hinzugefügt; inklusive .gitignore
+# V2.2 mount_isos.sh wurde entfernt
 #
 #**************************************
 
@@ -40,9 +41,9 @@ $dst_path = "$($dev.DriveLetter)\Hilfe"
 
 # Alle Bootsticks werden initialisiert
 Foreach ($dev in $devices) {
-
-    Remove-Item "$($dev.DriveLetter)\mount_isos.sh" -Recurse
-    Copy-Item -Path "$PSScriptRoot\mount_isos.sh" -Destination "$($dev.DriveLetter)"
+	# mount_isos wurde bereits bereinigt
+    # Remove-Item "$($dev.DriveLetter)\mount_isos.sh" -Recurse
+    # Copy-Item -Path "$PSScriptRoot\mount_isos.sh" -Destination "$($dev.DriveLetter)"
 	# Auch das PDF zur Erklärung des Datensticks in Hilfe Kopieren
 	Copy-Item -Path "$AngabenOrdner\Hilfe\Datenstick 2023_24.pdf" -Destination $dst_path
 }
