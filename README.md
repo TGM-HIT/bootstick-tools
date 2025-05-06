@@ -1,5 +1,15 @@
 # HIT Bootstick PowerShell Tools
 
+## `gui.bat`
+
+Startet `gui.ps1` mit Powershell (und hoffentlich korrekten Ausführungsberechtigungen)
+
+## `gui.ps1`
+
+Erstellt eine WinForms GUI für die Verwaltung der Datensticks.
+
+*Derzeit nur _scan_, _backup_ und _eject_ implementiert*
+
 ## `format_only.ps1`
 
 Formatiert alle angeschlossenen Bootsticks (optional als vollständige Formatierung mit dem Parameter `-Full`).
