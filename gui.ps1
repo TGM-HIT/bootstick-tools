@@ -145,6 +145,23 @@ Function Backup-Sticks {
 
 }
 
+Function Format-Sticks {
+    $WPFprogressBar.Minimum = 0
+    $WPFprogressBar.Maximum = $Script:devices.Count
+    $WPFprogressBar.Value = 0
+
+    foreach ($dev in $Script:devices) {
+
+        if ($WPFselectFullFormat.IsChecked) {
+            Format-Bootstick $dev -Full
+        } else {
+            Format-Bootstick $dev
+        }
+
+        $WPFprogressBar.Value = $WPFprogressBar.Value + 1
+    }
+}
+
 
 Update-StickList
 $WPFbackupPath.Text = $Script:backupPath
@@ -171,12 +188,6 @@ $WPFselectAngabenPath.Add_Click({
 })
 $WPFcreateBackup.Add_Click({Backup-Sticks})
 
-#$WPFformatSticks.Add_Click({
-#    write-host "formatting ..."
-#    $titleBar = "Fehler"
-#    $content = "ACHTUNG!!!: Das Verzeichnis .. existiert bereits. Der USB-Stick .. kann nicht gesichert werden." + "`n" + "Entfernen Sie den betreffenden Ordner ... aus dem Zielverzeichnis oder brechen Sie den Vorgang hier ab."
-#    $Result = [System.Windows.Forms.MessageBox]::Show($content,$titleBar,1)
-#    write-host $Result
-#})
+$WPFformatSticks.Add_Click({Format-Sticks})
 
 $Form.ShowDialog() | out-null
