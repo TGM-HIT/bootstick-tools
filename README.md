@@ -54,3 +54,9 @@ Im Verzeichnis `Angaben` (kann durch den Parameter `AngabenOrdner` überschriebe
 Dateien aus den Unterverzeichnissen `Angabe`, `Hilfe` und `isofiles` (sofern vorhanden) werden in die gleichnamigen Verzeichnisse auf allen Sticks kopiert (nur Dateien mit der Endung `.iso` im Unterverzeichnis `isofiles`). Falls Dateien aus dem Verzeichnis `isofiles` kopiert wurden, so wird auch das Skript `mount_isos.sh`auf jeden Stick kopiert (mit dem die entsprechenden Dateien gemountet werden können).
 
 Für alle Verzeichnisse im Unterordner `toISO` werden entsprechende `iso` Dateien im Unterverzeichnis `isofiles` erstellt (sofern nicht bereits existent).
+
+### `Beschreiben.ps1`
+Schreibt den Namen des Sticks neu 
+* Achtung der erste Buchstabe muss noch händisch im Skript eingetragen werden (a, b, s oder d)
+* Der Startwert wird dann abgefragt
+* Danach wird der Name A01 bis zb. A10 umbenannt
