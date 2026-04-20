@@ -236,5 +236,12 @@ Foreach ($dev in $devices){
 
 Write-Host "Alle angeschlossenen USB-Sticks bearbeitet. Bitte Logfile unter" $logfilepath "auf Fehler überprüfen"
 pause
-
+#Alle gefundenen Laufwerke werden nun ausgeworfen.
+Write-Host "Alle angeschlossenen USB-Sticks werden nun ausgeworfen."
+Foreach ($dev in $devices){
+    #$letter = $dev.DriveLetter + ":"
+    $shell = New-Object -ComObject Shell.Application
+    #$shell.NameSpace(17).ParseName($letter).InvokeVerb("Eject") 
+    $shell.NameSpace(17).ParseName($dev.DriveLetter).InvokeVerb("Eject") 
+}
 #>
